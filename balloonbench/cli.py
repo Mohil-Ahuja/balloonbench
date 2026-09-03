@@ -191,10 +191,119 @@ def list_profiles() -> None:
         console.print(name)
 
 
-_PRED_ARG = typer.Argument(..., help="Prediction JSON files, one per drawing.")
 _GT_OPT = typer.Option(
     ..., "--gt", "-g", help="Ground-truth directory, searched recursively by drawing id."
 )
+_BASELINE_ARG = typer.Argument(..., help="Baseline name, e.g. vlm_zeroshot.")
+_MODEL_OPT = typer.Option(
+    ..., "--model", "-m", help="Exact model version string; recorded in the manifest."
+)
+_PROVIDER_OPT = typer.Option(
+    None, "--provider", help="anthropic/openai/gemini; inferred from the model when omitted."
+)
+_PREDICT_OUT_OPT = typer.Option(
+    Path("data/predictions"), "--out", "-o", help="Where predictions are written."
+)
+_CACHE_OPT = typer.Option(
+    Path("data/cache/baselines"), "--cache", help="Response cache directory."
+)
+_LIMIT_OPT = typer.Option(None, "--limit", "-n", help="Stop after this many drawings.")
+_SAMPLES_OPT = typer.Option(3, "--samples", "-k", help="Self-consistency samples.")
+_NO_TILE_OPT = typer.Option(False, "--no-tile", help="Skip the tiled crops.")
+_DRY_RUN_OPT = typer.Option(
+    False, "--dry-run", help="Report what the run would cost and make no calls."
+)
+
+
+@app.command("baselines")
+def list_baselines() -> None:
+    """List the available extraction baselines."""
+    from balloonbench.baselines.run import BASELINES
+
+    for name in sorted(BASELINES):
+        console.print(name)
+
+
+@app.command("predict")
+def run_baseline_command(
+    baseline: str = _BASELINE_ARG,
+    gt: Path = _GT_OPT,
+    model: str = _MODEL_OPT,
+    provider: str | None = _PROVIDER_OPT,
+    out: Path = _PREDICT_OUT_OPT,
+    cache_dir: Path = _CACHE_OPT,
+    limit: int | None = _LIMIT_OPT,
+    samples: int = _SAMPLES_OPT,
+    no_tile: bool = _NO_TILE_OPT,
+    dry_run: bool = _DRY_RUN_OPT,
+) -> None:
+    """Run an extraction baseline over a set of drawings.
+
+    This is the one command in the tool that spends money. It resumes by default -- a
+    drawing whose prediction already exists is skipped -- and every response is cached on
+    disk, so a repeated run costs nothing. ``--dry-run`` reports the number of calls a run
+    would make and contacts nobody, which is worth doing before pointing it at 500 sheets.
+
+    ``--model`` is required and is recorded verbatim in the manifest. SPEC.md section 11
+    asks for pinned versions, and a default tracking a vendor's moving alias would make two
+    runs of the same command incomparable while both claimed the same model.
+    """
+    from balloonbench.baselines.cache import ResponseCache
+    from balloonbench.baselines.providers import get_provider, provider_for_model
+    from balloonbench.baselines.run import BASELINES, image_for, run_baseline
+
+    if baseline not in BASELINES:
+        console.print(f"[red]unknown baseline {baseline!r}; known: {sorted(BASELINES)}")
+        raise typer.Exit(code=1)
+
+    drawings = sorted(Path(gt).rglob("*.json"))
+    drawings = [p for p in drawings if p.name != "manifest.json"]
+    if limit is not None:
+        drawings = drawings[:limit]
+    if not drawings:
+        console.print(f"[red]no ground-truth drawings found under {gt}")
+        raise typer.Exit(code=1)
+
+    provider_name = provider or provider_for_model(model)
+
+    if dry_run:
+        per_drawing = 1 if baseline == "vlm_zeroshot" else samples * (1 if no_tile else 5)
+        missing = [p for p in drawings if image_for(p) is None]
+        pending = [p for p in drawings if not (out / f"{p.stem}.json").exists()]
+        console.print(
+            f"{baseline} with {model} via {provider_name}\n"
+            f"  {len(drawings)} drawings, {len(pending)} without a prediction yet\n"
+            f"  up to {len(pending) * per_drawing} calls before the cache is consulted\n"
+            f"  {len(missing)} drawings have no rendered image and would be skipped"
+        )
+        return
+
+    manifest = run_baseline(
+        baseline,
+        drawings,
+        out,
+        provider=get_provider(provider_name),
+        provider_name=provider_name,
+        model=model,
+        cache=ResponseCache(root=cache_dir),
+        samples=samples,
+        **({} if baseline == "vlm_zeroshot" else {"tile": not no_tile}),
+        on_result=lambda drawing_id, result: console.print(
+            f"[green] ok [/green] {drawing_id}  "
+            f"{len(result.prediction.characteristics)} characteristics, "
+            f"{result.calls} calls ({result.cache_hits} cached)"
+            + (f" [red]{len(result.errors)} errors[/red]" if result.errors else "")
+        ),
+    )
+    console.print(
+        f"\n{manifest.n_drawings} drawings ({manifest.n_failed} failed), "
+        f"{manifest.cache_hits} cache hits, {manifest.cache_misses} calls -> {out}"
+    )
+    if manifest.errors:
+        console.print(f"[yellow]{len(manifest.errors)} errors; see manifest.json")
+
+
+_PRED_ARG = typer.Argument(..., help="Prediction JSON files, one per drawing.")
 _REPORT_OUT_OPT = typer.Option(
     Path("results/latest"), "--out", "-o", help="Where the report is written."
 )

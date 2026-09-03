@@ -37,7 +37,8 @@ Under construction, milestone by milestone.
 | M2 — `drawgen` (projection, layout, annotation, render) | **done** |
 | M3 — `degrade` (6 realism profiles) | **done** |
 | M4 — `evalkit` (matching + 4 metric tiers) | **done** |
-| M5–M6 — VLM and vector-hybrid baselines | next |
+| M5 — VLM baselines (zero-shot + structured) | **done** (harness; the paid run is yours to launch) |
+| M6 — callout grammar + vector-hybrid baseline | next |
 | M7 — `verifier` | not started |
 | M8 — 50 hand-labelled real drawings | not started |
 | M9–M11 — detector baseline, demo, write-up | not started |
@@ -135,6 +136,36 @@ weighted error total). The cost weights, with a written justification for each, 
 rows, `report.md`, and plots of accuracy against degradation profile, symbol and drawing
 complexity. `docs/metrics.md` explains what each number means, and what it deliberately
 does not.
+
+### Running a baseline
+
+```bash
+balloonbench baselines                                   # what can be run
+balloonbench predict vlm_zeroshot --gt data/drawings     --model claude-opus-5 --dry-run                       # what it would cost
+balloonbench predict vlm_zeroshot --gt data/drawings --model claude-opus-5
+balloonbench predict vlm_structured --gt data/drawings --model claude-opus-5 -k 3
+```
+
+Two baselines so far. `vlm_zeroshot` is the control: one image, one prompt describing the
+output schema, one answer, no retries. `vlm_structured` is the same model asked properly —
+a worked reading order, an overlapping grid of crops merged back into sheet coordinates, and
+a self-consistency vote over *k* samples that keeps only what most of them agree on. Holding
+the model fixed and varying only the asking is what makes the gap between them a measurement
+of prompting rather than of capability.
+
+This is the one command in the tool that spends money, so it is built to spend as little as
+possible: every response is cached on disk under a key covering the model, the exact prompt,
+the image bytes, the temperature and the sample index, and the runner resumes by skipping
+drawings that already have a prediction. `--dry-run` reports the number of calls a run would
+make and contacts nobody.
+
+`--model` is required and recorded verbatim in `manifest.json` alongside the prompt variant,
+temperature, sample count and cache statistics. A default tracking a vendor's moving alias
+would make two runs of the same command incomparable while both claimed the same model.
+
+API keys are read from the environment (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`,
+`GOOGLE_API_KEY`); the SDKs live behind the optional `baselines` extra and none is imported
+until it is used.
 
 ### House styles
 
