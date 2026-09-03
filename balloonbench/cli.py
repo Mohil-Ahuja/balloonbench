@@ -303,6 +303,92 @@ def run_baseline_command(
         console.print(f"[yellow]{len(manifest.errors)} errors; see manifest.json")
 
 
+_VERIFY_ARG = typer.Argument(..., help="Ground-truth or prediction JSON files to verify.")
+_STEP_OPT = typer.Option(
+    None, "--step", help="STEP file or directory; found beside each JSON when omitted."
+)
+_VERIFY_OUT_OPT = typer.Option(
+    None, "--out", "-o", help="Directory for the verification reports."
+)
+
+
+@app.command("verify")
+def verify_command(
+    paths: list[Path] = _VERIFY_ARG,
+    step: Path | None = _STEP_OPT,
+    out: Path | None = _VERIFY_OUT_OPT,
+) -> None:
+    """Check characteristics against the solid they describe.
+
+    Each characteristic comes back verified, contradicted or unverifiable, alongside any
+    defects found in the drawing itself. The unverifiable bucket is not a failure: it names
+    the characteristics that need a person, which is what makes the output usable where a
+    bare confidence score is not.
+
+    The STEP file is found beside the JSON unless ``--step`` says otherwise, so the usual
+    invocation is just the ground-truth file that ``drawgen`` already wrote.
+    """
+    from balloonbench.verifier import BrepIndex, verify_drawing
+
+    failures = 0
+    for path in paths:
+        try:
+            drawing = Drawing.from_json(path)
+        except Exception as exc:  # noqa: BLE001 - report the reason, whatever it is
+            failures += 1
+            console.print(f"[red]FAIL[/red] {path}: {exc}")
+            continue
+
+        solid = _step_for(path, step, drawing)
+        if solid is None:
+            failures += 1
+            console.print(f"[red]FAIL[/red] {path}: no STEP file found for this drawing")
+            continue
+
+        report = verify_drawing(drawing, BrepIndex.from_step(solid))
+        summary = report.summary
+        console.print(
+            f"[green] ok [/green] {drawing.drawing_id}  "
+            f"{summary['verified']} verified, "
+            f"[red]{summary['contradicted']} contradicted[/red], "
+            f"{summary['unverifiable']} unverifiable, "
+            f"{len(report.drawing_defects)} drawing defects"
+        )
+        for entry in report.per_characteristic:
+            if entry.verdict == "contradicted":
+                console.print(f"    [red]#{entry.id}[/red] {entry.detail}")
+        for defect in report.drawing_defects:
+            console.print(f"    [yellow]{defect.type}[/yellow] {defect.detail}")
+
+        if out is not None:
+            out.mkdir(parents=True, exist_ok=True)
+            report.write(out / f"{drawing.drawing_id}.verification.json")
+
+    if failures:
+        raise typer.Exit(code=1)
+
+
+def _step_for(json_path: Path, step: Path | None, drawing: Drawing) -> Path | None:
+    """The solid belonging to a drawing.
+
+    Tries what the caller said, then the part reference the drawing carries, then a STEP
+    file beside the JSON. The part reference is tried before the neighbour because a
+    drawing knows which solid it describes and a directory listing only guesses.
+    """
+    if step is not None and step.is_file():
+        return step
+    candidates: list[Path] = []
+    if drawing.part_ref:
+        candidates += [Path(drawing.part_ref), json_path.parent / Path(drawing.part_ref).name]
+    if step is not None and step.is_dir():
+        candidates += sorted(step.glob(f"{json_path.stem}*.st*p"))
+    candidates += sorted(json_path.parent.glob(f"{json_path.stem}*.st*p"))
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
+
+
 _PRED_ARG = typer.Argument(..., help="Prediction JSON files, one per drawing.")
 _REPORT_OUT_OPT = typer.Option(
     Path("results/latest"), "--out", "-o", help="Where the report is written."

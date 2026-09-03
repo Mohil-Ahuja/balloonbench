@@ -163,7 +163,14 @@ def generate_drawing(
     rather than passed in by a caller that might vary independently.
     """
     rng = np.random.default_rng(_drawing_seed(family, seed))
-    part = build_part(family, seed)
+    # The solid is exported beside the drawing when artifacts are being written. The
+    # verifier needs it -- a drawing with no solid to check against cannot be verified at
+    # all -- and rebuilding it from the seed later works but makes the drawing directory an
+    # incomplete record of itself.
+    out_dir = Path(out_dir)
+    if write_artifacts:
+        out_dir.mkdir(parents=True, exist_ok=True)
+    part = build_part(family, seed, step_dir=out_dir if write_artifacts else None)
 
     style = style or sample_style(rng)
     projection = projection or str(rng.choice(PROJECTION_ANGLES))

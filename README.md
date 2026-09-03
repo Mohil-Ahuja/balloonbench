@@ -39,8 +39,8 @@ Under construction, milestone by milestone.
 | M4 — `evalkit` (matching + 4 metric tiers) | **done** |
 | M5 — VLM baselines (zero-shot + structured) | **done** (harness; the paid run is yours to launch) |
 | M6 — callout grammar + vector-hybrid baseline | **done** |
-| M7 — `verifier` | next |
-| M8 — 50 hand-labelled real drawings | not started |
+| M7 — `verifier` | **done** |
+| M8 — 50 hand-labelled real drawings | next |
 | M9–M11 — detector baseline, demo, write-up | not started |
 
 ---
@@ -205,6 +205,49 @@ AutoCAD's `%%c`, shop abbreviations like `TP` and `TIR`, comma decimals, inch fr
 parse enters the results as a confident answer while a refusal can be routed to a model. It
 is gated on a 323-string corpus at `tests/data/callout_corpus.jsonl`, a quarter of which are
 strings that must **not** parse.
+
+### Verifying against the solid
+
+The part nobody else builds: given a STEP file and a list of characteristics, decide for
+each whether the geometry agrees.
+
+```bash
+balloonbench verify data/drawings/flange/*.json --out results/verification
+```
+
+Every characteristic comes back **verified**, **contradicted** or **unverifiable**, and the
+last of those is not a failure bucket — it names the characteristics that need a person,
+which is what makes the output usable somewhere a bare confidence score is not. Five checks
+run: `size_exists` against the B-rep, `datum_dof` against a degrees-of-freedom table,
+`mmc_consistency` for bonus tolerance and virtual condition, `tolerance_stack` for chains
+that close or fight each other, and `unit_sanity` for mm/inch confusion.
+
+Drawing defects are reported separately from extraction verdicts, because they are not the
+same thing: a positional tolerance referencing one planar datum is a defect in the *drawing*,
+whoever read it. That is the check finding problems in the customer's own drawings.
+
+Measured, not asserted (5 families × 8 seeds, 303 characteristics):
+
+| | |
+|---|---|
+| **False positives on correct ground truth** | **1.3%** (4 of 303) — the M7 gate is 5% |
+| Misread nominal caught | 82% |
+| Reference frame stripped to one datum | 100% |
+| Reference to an undeclared datum | 100% |
+| Whole sheet in the wrong unit | 100% |
+
+Datum swaps, reordered reference frames and dropped callouts are reported as **undetectable
+by geometry** rather than counted as misses, and the harness proves it rather than claiming
+it: an injection is labelled undetectable only when the verifier's own sufficiency rule says
+both the original and the damaged frame constrain the part adequately. Such a drawing is
+still internally consistent and still satisfiable by the solid, so no check working from
+geometry alone can tell them apart. Catching those is `evalkit`'s tier-3 datum graph
+distance, which has ground truth to compare against.
+
+`balloonbench/verifier/brep_index.py` is reusable on its own: it loads any STEP file and
+answers what diameters, plane separations, axis distances, hole patterns and envelope the
+solid actually has, skipping degenerate faces rather than crashing on them.
+`docs/verifier.md` explains each check and what the measurement taught us.
 
 ### House styles
 
