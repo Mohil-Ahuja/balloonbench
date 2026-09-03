@@ -1,0 +1,10 @@
+# Conda is used only to provision the interpreter. Every package, including the OCCT
+# binding (OCP, via cadquery), installs from pip -- see PLAN.md section 0.1 for why
+# pythonocc-core is deliberately absent.
+name: balloonbench
+channels: [conda-forge]
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - -e .[dev,vision]

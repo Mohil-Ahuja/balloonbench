@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/balloonbench/balloonbench/schema/characteristic.schema.json",
+  "title": "BalloonBench drawing ground truth",
+  "description": "The contract every BalloonBench module reads and writes. Frozen in Milestone 0. See SPEC.md section 4. Structural rules that JSON Schema cannot express (contiguous ids, datum-ref legality per symbol, material-modifier legality, bbox-inside-image) are enforced by balloonbench/schema.py and covered by tests/test_schema.py.",
+  "type": "object",
+  "required": [
+    "drawing_id",
+    "source",
+    "units",
+    "projection",
+    "sheet",
+    "title_block",
+    "datums",
+    "characteristics",
+    "provenance"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "drawing_id": { "type": "string", "minLength": 1 },
+    "source": { "enum": ["synthetic", "real"] },
+    "part_ref": {
+      "type": ["string", "null"],
+      "description": "Path to the STEP file. null for real drawings with no model."
+    },
+    "units": { "enum": ["mm", "inch"] },
+    "projection": { "enum": ["first_angle", "third_angle"] },
+    "image_size": {
+      "type": ["array", "null"],
+      "description": "[width, height] of the rendered image in pixels. All bboxes must lie inside it.",
+      "prefixItems": [
+        { "type": "integer", "exclusiveMinimum": 0 },
+        { "type": "integer", "exclusiveMinimum": 0 }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "sheet": {
+      "type": "object",
+      "required": ["size", "scale"],
+      "additionalProperties": false,
+      "properties": {
+        "size": { "enum": ["A4", "A3", "A2", "A1", "A0"] },
+        "scale": { "type": "string", "pattern": "^[0-9]+:[0-9]+$" }
+      }
+    },
+    "title_block": {
+      "type": "object",
+      "required": ["part_number", "revision"],
+      "additionalProperties": false,
+      "properties": {
+        "part_number": { "type": "string", "minLength": 1 },
+        "revision": { "type": "string" },
+        "material": { "type": ["string", "null"] },
+        "general_tolerance": { "type": ["string", "null"] },
+        "surface_finish_default": { "type": ["string", "null"] }
+      }
+    },
+    "datums": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/datum" }
+    },
+    "characteristics": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/characteristic" }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["generator_version"],
+      "additionalProperties": false,
+      "properties": {
+        "generator_version": { "type": "string" },
+        "generator_seed": { "type": ["integer", "null"] },
+        "degradation_profile": { "type": ["string", "null"] },
+        "house_style": {
+          "type": ["string", "null"],
+          "description": "Sampled drawing house style, so results can be sliced by style (SPEC 7.3)."
+        },
+        "labeler": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "$defs": {
+    "bbox": {
+      "type": "array",
+      "description": "[x0, y0, x1, y1] in pixel coordinates of the rendered image, origin top-left, x1 > x0 and y1 > y0.",
+      "prefixItems": [
+        { "type": "number" },
+        { "type": "number" },
+        { "type": "number" },
+        { "type": "number" }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "datum_label": { "type": "string", "pattern": "^[A-Z]{1,2}$" },
+    "material_modifier": { "enum": ["MMC", "LMC", null] },
+    "datum": {
+      "type": "object",
+      "required": ["label", "feature_type", "view", "bbox"],
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/datum_label" },
+        "feature_type": {
+          "enum": [
+            "planar_face",
+            "cylindrical_feature",
+            "axis",
+            "width",
+            "spherical"
+          ]
+        },
+        "view": { "type": "string", "minLength": 1 },
+        "bbox": { "$ref": "#/$defs/bbox" },
+        "geometry_ref": {
+          "type": ["string", "null"],
+          "description": "Id into the B-rep face map, e.g. face_12. null if unknown."
+        }
+      }
+    },
+    "datum_ref": {
+      "type": "object",
+      "required": ["label"],
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/datum_label" },
+        "modifier": { "$ref": "#/$defs/material_modifier" }
+      }
+    },
+    "characteristic": {
+      "type": "object",
+      "required": ["id", "kind", "view", "bbox"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Balloon number, 1-indexed, reading order. Unique and contiguous from 1."
+        },
+        "kind": {
+          "enum": [
+            "dimension",
+            "geometric_tolerance",
+            "note",
+            "surface_finish",
+            "thread"
+          ]
+        },
+        "view": { "type": "string", "minLength": 1 },
+        "bbox": { "$ref": "#/$defs/bbox" },
+        "leader_target_bbox": {
+          "oneOf": [{ "$ref": "#/$defs/bbox" }, { "type": "null" }]
+        },
+
+        "dim_type": {
+          "enum": [
+            "linear",
+            "diameter",
+            "radius",
+            "angular",
+            "chamfer",
+            "thread",
+            null
+          ]
+        },
+        "nominal": { "type": ["number", "null"] },
+        "upper_tol": {
+          "type": ["number", "null"],
+          "description": "Signed deviation from nominal, in units."
+        },
+        "lower_tol": {
+          "type": ["number", "null"],
+          "description": "Signed deviation from nominal, in units."
+        },
+        "tol_style": {
+          "enum": [
+            "bilateral",
+            "unilateral",
+            "limit",
+            "fit",
+            "general",
+            "basic",
+            null
+          ]
+        },
+        "fit_class": {
+          "type": ["string", "null"],
+          "description": "ISO 286 fit designation such as H7 or g6. null if not a fit callout."
+        },
+        "is_basic": { "type": "boolean", "default": false },
+        "is_reference": { "type": "boolean", "default": false },
+        "is_critical": {
+          "type": "boolean",
+          "default": false,
+          "description": "CTQ flag; drives the cost-weighted metric."
+        },
+
+        "gtol_symbol": {
+          "enum": [
+            "flatness",
+            "straightness",
+            "circularity",
+            "cylindricity",
+            "perpendicularity",
+            "parallelism",
+            "angularity",
+            "position",
+            "concentricity",
+            "symmetry",
+            "circular_runout",
+            "total_runout",
+            "profile_surface",
+            null
+          ]
+        },
+        "gtol_value": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "gtol_zone": { "enum": ["diametral", "linear", null] },
+        "material_modifier": { "$ref": "#/$defs/material_modifier" },
+        "datum_refs": {
+          "type": "array",
+          "maxItems": 3,
+          "description": "Ordered: primary, secondary, tertiary.",
+          "items": { "$ref": "#/$defs/datum_ref" }
+        },
+
+        "raw_text": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

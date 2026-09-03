@@ -1,0 +1,14 @@
+# Normalise line endings so a checkout is identical on Windows, macOS and Linux.
+* text=auto eol=lf
+
+# Binary assets must never be line-ending converted. The vendored drawing fonts are the
+# case that matters: BalloonBench's reproducibility contract is that a seed reproduces a
+# drawing byte for byte, and a font whose bytes changed on checkout would silently shift
+# every glyph advance -- and therefore every ground-truth bounding box computed from it.
+*.ttf   binary
+*.otf   binary
+*.png   binary
+*.pdf   binary
+*.step  binary
+*.stp   binary
+*.pt    binary

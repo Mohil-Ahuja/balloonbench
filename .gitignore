@@ -1,0 +1,14 @@
+data/
+__pycache__/
+*.pyc
+.pytest_cache/
+.hypothesis/
+*.egg-info/
+.venv/
+build/
+dist/
+.cache/
+CLAUDE.md
+PLAN.md
+SPEC.md 
+
