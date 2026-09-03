@@ -231,6 +231,44 @@ def _drawing_font() -> str:
     )
 
 
+def _handwriting_font() -> str:
+    """The vendored handwriting font backs the clutter transforms in ``degrade``.
+
+    The same reproducibility argument as the drawing font, with one addition: this one is
+    drawn *over* a sheet whose ground truth was computed before it existed. If it fell back
+    to a system font the marks would land differently on every machine, so a box that
+    happens to survive here could be obliterated there -- a difference no test would
+    attribute to the font.
+    """
+    import pathlib  # noqa: PLC0415
+
+    from fontTools.ttLib import TTFont  # noqa: PLC0415
+
+    path = (
+        pathlib.Path(__file__).resolve().parent.parent
+        / "assets" / "fonts" / "caveat" / "Caveat.ttf"
+    )
+    if not path.exists():
+        raise RuntimeError(f"vendored handwriting font missing at {path}")
+
+    covered: set[int] = set()
+    for table in TTFont(path)["cmap"].tables:
+        covered |= set(table.cmap)
+
+    # Handwritten notes, stamps and red-pen corrections use ASCII plus the few marks the
+    # texts in ``degrade.clutter`` actually contain.
+    needed = set(range(0x20, 0x7F)) | {0x00D8, 0x00B1, 0x00B0}
+    missing = sorted(hex(c) for c in needed - covered)
+    if missing:
+        raise RuntimeError(f"handwriting font is missing {len(missing)} glyphs: {missing}")
+
+    licence = path.parent / "OFL.txt"
+    if not licence.exists():
+        raise RuntimeError(f"vendored font has no licence notice beside it at {licence}")
+
+    return f"Caveat ({len(covered)} glyphs) covers ASCII and the marks clutter needs"
+
+
 def _no_agpl_in_core() -> str:
     """PLAN.md section 0.2: the core package stays Apache-2.0 clean, so nothing under
     balloonbench/ may import the AGPL-licensed pymupdf."""
@@ -282,6 +320,7 @@ CHECKS: list[Check] = [
     Check("pdf text extraction", _pdf_text),
     Check("clean interpreter shutdown", _clean_shutdown),
     Check("drawing font", _drawing_font),
+    Check("handwriting font", _handwriting_font),
     Check("licence hygiene", _no_agpl_in_core),
     Check("opencv", _cv, required=False),
     Check("shapely", _shapely),

@@ -42,6 +42,14 @@ _PROJECTION_OPT = typer.Option(
     None, "--projection", help="first_angle or third_angle; sampled when omitted."
 )
 _SHEET_OPT = typer.Option(None, "--sheet", help="A4/A3/A2/A1/A0; sampled when omitted.")
+_IMAGES_ARG = typer.Argument(..., help="Rendered PNGs to degrade; each needs a sibling .json.")
+_PROFILE_OPT = typer.Option(
+    ..., "--profile", "-p", help="Degradation profile name, or 'all'."
+)
+_DEG_OUT_OPT = typer.Option(
+    Path("data/degraded"), "--out", "-o", help="Degraded output directory."
+)
+_DEG_SEED_OPT = typer.Option(0, "--seed", "-s", help="Degradation seed.")
 
 
 @app.command()
@@ -169,6 +177,91 @@ def generate_drawings(
             )
 
     console.print(f"\n{made} drawn, {failed} failed -> {out}")
+    if failed:
+        raise typer.Exit(code=1)
+
+
+@app.command("profiles")
+def list_profiles() -> None:
+    """List the degradation profiles."""
+    from balloonbench.degrade import profile_names
+
+    for name in profile_names():
+        console.print(name)
+
+
+def _ground_truth_for(image: Path) -> Path | None:
+    """The ground-truth JSON belonging to a rendered PNG.
+
+    ``drawgen`` writes the raster with its resolution in the name (``flange-00003_150.png``)
+    while the ground truth keeps the bare drawing id, so a plain suffix swap misses. Trailing
+    underscore-separated qualifiers are dropped one at a time until a JSON turns up.
+    """
+    stem = image.stem
+    while True:
+        candidate = image.with_name(f"{stem}.json")
+        if candidate.exists():
+            return candidate
+        if "_" not in stem:
+            return None
+        stem = stem.rsplit("_", 1)[0]
+
+
+@app.command("degrade")
+def degrade_images(
+    images: list[Path] = _IMAGES_ARG,
+    profile: str = _PROFILE_OPT,
+    out: Path = _DEG_OUT_OPT,
+    seed: int = _DEG_SEED_OPT,
+) -> None:
+    """Apply a degradation profile to rendered drawings and their ground truth.
+
+    The ground truth is written alongside the degraded image, not shared with the clean one,
+    because degradation moves boxes and drops callouts: a single JSON serving both would
+    describe neither. ``--profile all`` writes one subdirectory per condition, which is the
+    shape the harness expects when a result is reported per profile.
+    """
+    from balloonbench.degrade import degrade, profile_names
+
+    known = profile_names()
+    targets = list(known) if profile == "all" else [profile]
+    for name in targets:
+        if name not in known:
+            console.print(f"[red]unknown profile {name!r}; known: {list(known)}")
+            raise typer.Exit(code=1)
+
+    made = failed = 0
+    for name in targets:
+        directory = out / name
+        directory.mkdir(parents=True, exist_ok=True)
+        for image in images:
+            # A QA overlay has the boxes drawn on it. Degrading one would produce an image
+            # whose painted boxes and whose ground truth disagree, which is exactly the
+            # confusion the overlay exists to prevent.
+            if image.stem.endswith("_overlay"):
+                continue
+            json_path = _ground_truth_for(image)
+            if json_path is None:
+                failed += 1
+                console.print(f"[red]FAIL[/red] {image}: no ground truth alongside it")
+                continue
+            try:
+                sample = degrade(image, Drawing.from_json(json_path), name, seed)
+            except Exception as exc:  # noqa: BLE001 - report and keep going
+                failed += 1
+                console.print(f"[red]FAIL[/red] {image} [{name}]: {exc}")
+                continue
+            stem = image.stem
+            sample.image.save(directory / f"{stem}.png")
+            sample.drawing.to_json(directory / f"{stem}.json")
+            made += 1
+            console.print(
+                f"[green] ok [/green] {directory / stem}.png  "
+                f"{len(sample.drawing.characteristics)} characteristics, "
+                f"{len(sample.applied)} transforms"
+            )
+
+    console.print(f"\n{made} degraded, {failed} failed -> {out}")
     if failed:
         raise typer.Exit(code=1)
 

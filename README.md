@@ -35,8 +35,8 @@ Under construction, milestone by milestone.
 | M0 — environment, frozen schema, tests, CI | **done** |
 | M1 — `partgen` (5 part families) | **done** |
 | M2 — `drawgen` (projection, layout, annotation, render) | **done** |
-| M3 — `degrade` (6 realism profiles) | next |
-| M4 — `evalkit` (matching + 4 metric tiers) | not started |
+| M3 — `degrade` (6 realism profiles) | **done** |
+| M4 — `evalkit` (matching + 4 metric tiers) | next |
 | M5–M6 — VLM and vector-hybrid baselines | not started |
 | M7 — `verifier` | not started |
 | M8 — 50 hand-labelled real drawings | not started |
@@ -80,6 +80,31 @@ build a slice that differs from the default population in exactly one recorded w
 ```bash
 balloonbench validate data/drawings/flange/flange-00003.json
 ```
+
+### Degrading them
+
+```bash
+balloonbench profiles                                        # the six conditions
+balloonbench degrade data/drawings/flange/*.png -p scan_heavy
+balloonbench degrade data/drawings/flange/*.png -p all -o data/bench
+```
+
+Six named profiles stand for six ways a drawing reaches the person reading it: `clean`,
+`office_scan`, `scan_heavy`, `photocopy_gen3`, `phone_photo` and `blueprint_legacy`. Each is
+an ordered list of seeded, individually optional transforms — rotation, keystone, lens
+distortion, creases, grain, toner streaks, dropout, JPEG, plus stamps, punch holes,
+handwritten notes and previous ballooning drawn over the sheet. Order is physical: paper is
+marked and creased before it is copied, and the sensor and the file format come last.
+
+The ground truth is degraded with the image, never shared with the clean version. Every
+geometric warp maps the bounding boxes through the same transform as the pixels, and a
+callout warped off the sheet is dropped rather than clamped — so a degraded sample's JSON
+describes the degraded image and nothing else. `clean` runs the identical code path with no
+transforms, so it is a baseline for the other five rather than for the generator's output.
+
+A profile plus a seed reproduces a sample exactly, and the profile name is recorded in
+`provenance.degradation_profile` so results can be reported per condition instead of
+averaged into a single number that hides where a model fails.
 
 ### House styles
 
