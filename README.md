@@ -36,8 +36,8 @@ Under construction, milestone by milestone.
 | M1 — `partgen` (5 part families) | **done** |
 | M2 — `drawgen` (projection, layout, annotation, render) | **done** |
 | M3 — `degrade` (6 realism profiles) | **done** |
-| M4 — `evalkit` (matching + 4 metric tiers) | next |
-| M5–M6 — VLM and vector-hybrid baselines | not started |
+| M4 — `evalkit` (matching + 4 metric tiers) | **done** |
+| M5–M6 — VLM and vector-hybrid baselines | next |
 | M7 — `verifier` | not started |
 | M8 — 50 hand-labelled real drawings | not started |
 | M9–M11 — detector baseline, demo, write-up | not started |
@@ -105,6 +105,36 @@ transforms, so it is a baseline for the other five rather than for the generator
 A profile plus a seed reproduces a sample exactly, and the profile name is recorded in
 `provenance.degradation_profile` so results can be reported per condition instead of
 averaged into a single number that hides where a model fails.
+
+### Evaluating predictions
+
+```bash
+balloonbench evaluate preds/*.json --gt data/drawings --out results/my-run --name my-run
+balloonbench evaluate preds/*.json --gt data/drawings --no-bbox --out results/my-run-nb
+```
+
+A prediction is a JSON file naming the `drawing_id` it answers, with a list of
+characteristics in the ground-truth schema. Predictions are parsed leniently: anything that
+cannot be a valid characteristic — a flatness carrying a datum reference, a modifier on a
+surface profile — is kept with the reason, counted as a false positive, and reported as a
+schema violation rather than discarded, so a model cannot improve its precision by emitting
+output that will not load.
+
+Matching is a global assignment over a cost matrix combining box IoU with a semantic
+distance, solved with the Hungarian algorithm; pairs above a threshold are rejected and
+become a miss plus a false alarm. `--no-bbox` matches on content alone for models that
+cannot produce coordinates. It is a materially easier task, so it is reported as its own run
+and never averaged with a localised one.
+
+Four metric tiers are reported: **detection** (precision/recall/F1, broken out by kind and
+by GD&T symbol), **correctness given a match** (nominal, tolerance exact and within one last
+significant digit, symbol, modifier, ordered datum references), **structure** (normalised
+datum graph edit distance and full-drawing exact match), and **cost** (CTQ recall and a
+weighted error total). The cost weights, with a written justification for each, live in
+`balloonbench/evalkit/error_costs.json`. Every run writes `report.json` with per-drawing
+rows, `report.md`, and plots of accuracy against degradation profile, symbol and drawing
+complexity. `docs/metrics.md` explains what each number means, and what it deliberately
+does not.
 
 ### House styles
 

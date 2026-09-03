@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "unit": "relative cost units; 1.0 is one wrong non-critical dimension value",
+  "critical_multiplier": 4.0,
+  "critical_multiplier_rationale": "A characteristic flagged is_critical is one an inspection plan must contain. Getting it wrong does not cost more paperwork, it costs a part: scrap, a containment sort, or a returned shipment. Four is a deliberately conservative stand-in for a ratio that is far larger in practice and that every shop would quote differently.",
+  "weights": {
+    "missed_characteristic": {
+      "cost": 3.0,
+      "rationale": "A missed callout never reaches the inspection plan, so nothing downstream can catch it. That is strictly worse than a wrong value, which a first-article measurement will contradict."
+    },
+    "spurious_characteristic": {
+      "cost": 1.0,
+      "rationale": "An invented callout costs inspection time and an argument with the supplier, but it is visible: someone looks for it on the drawing and does not find it."
+    },
+    "wrong_nominal": {
+      "cost": 1.0,
+      "rationale": "The reference error. One wrong dimension value on a non-critical feature."
+    },
+    "wrong_tolerance": {
+      "cost": 1.5,
+      "rationale": "Slightly worse than a wrong nominal because it is less likely to be noticed. A part measured against a loosened tolerance passes inspection and fails in assembly."
+    },
+    "wrong_symbol": {
+      "cost": 2.0,
+      "rationale": "A different geometric characteristic is a different measurement with different fixturing. Reading total runout as circular runout changes what the inspector sets up, not merely what they record."
+    },
+    "wrong_modifier": {
+      "cost": 2.0,
+      "rationale": "Dropping an MMC modifier silently removes the bonus tolerance a part was designed to use, rejecting conforming parts. Adding one accepts non-conforming ones. Models fail here more than anywhere else, which is precisely why it is not cheap."
+    },
+    "wrong_datum_refs": {
+      "cost": 2.5,
+      "rationale": "The reference frame decides where the tolerance zone is. Every individual value can be right and the part still measured from the wrong faces, which is the failure mode the tier-3 datum graph exists to expose."
+    },
+    "schema_violation": {
+      "cost": 1.0,
+      "rationale": "A prediction that cannot be a valid characteristic at all -- a flatness with a datum reference, a modifier on a surface profile. It cannot be matched, so it also counts as spurious; this is the surcharge for output that would not load into a PPAP form."
+    }
+  }
+}

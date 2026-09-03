@@ -851,7 +851,70 @@ def plan_drawing(
     datums = _plan_datums(part, layout, style)
     plan = _PLANS.get(part.family, _plan_generic)
     annotations = plan(part, layout, style, rng, datums)
+    _mark_critical(annotations, rng)
     return datums, annotations
+
+
+#: Roughly what fraction of a drawing's callouts a quality engineer would ring as critical
+#: to quality (SPEC.md section 6). Not a hard count: on a sheet of eight callouts the number
+#: that matters is one or two, and forcing exactly 15% would make it a property of how
+#: crowded the sheet is rather than of what the part has to do.
+CRITICAL_FRACTION = 0.15
+
+
+def _criticality_score(payload: dict[str, Any]) -> float:
+    """How likely this callout is to be the one that scraps a part if it is wrong.
+
+    Criticality is sampled with weights rather than uniformly, because on a real drawing it
+    is not random: the characteristics a quality engineer rings are the ones that decide
+    whether the part assembles. A positional tolerance on a bolt pattern and a fitted bore
+    are the usual answers; a chamfer angle and a general-toleranced overall length are not.
+    Tightness matters too -- the same feature toleranced to 0.02 and to 0.5 are different
+    risks, and the tolerance is the designer telling us which.
+    """
+    if payload.get("kind") == "geometric_tolerance":
+        symbol = payload.get("gtol_symbol")
+        base = 3.0 if symbol == "position" else 1.5
+        value = payload.get("gtol_value") or 1.0
+        # A tighter zone is a stronger statement of intent.
+        return base * (1.0 + min(2.0, 0.1 / max(value, 1e-3)))
+
+    if payload.get("kind") != "dimension":
+        return 0.2
+
+    # Features of size with a stated tolerance: a fit class is the strongest signal a
+    # drawing has that a dimension is functional.
+    if payload.get("fit_class"):
+        return 3.0
+    upper, lower = payload.get("upper_tol"), payload.get("lower_tol")
+    if upper is None or lower is None:
+        return 0.3
+    span = abs(upper - lower)
+    nominal = abs(payload.get("nominal") or 1.0)
+    relative = span / max(nominal, 1e-6)
+    return 2.0 if relative < 0.002 else 1.0
+
+
+def _mark_critical(annotations: list[Annotation], rng: np.random.Generator) -> None:
+    """Tag a weighted sample of callouts ``is_critical`` (SPEC.md section 6).
+
+    This drives the tier-4 cost metric in ``evalkit``: a missed critical characteristic is
+    charged several times a missed ordinary one. Without it every drawing would have a CTQ
+    recall of nothing over nothing and the tier would be unmeasurable.
+    """
+    eligible = [a for a in annotations if a.payload.get("kind") in
+                {"dimension", "geometric_tolerance"}]
+    if not eligible:
+        return
+
+    count = max(1, round(CRITICAL_FRACTION * len(annotations)))
+    weights = np.array([_criticality_score(a.payload) for a in eligible], dtype=float)
+    weights /= weights.sum()
+    chosen = rng.choice(
+        len(eligible), size=min(count, len(eligible)), replace=False, p=weights
+    )
+    for index in np.atleast_1d(chosen):
+        eligible[int(index)].payload["is_critical"] = True
 
 
 # --- sheet decorations ---------------------------------------------------------------------

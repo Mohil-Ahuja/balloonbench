@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import typer
@@ -188,6 +189,84 @@ def list_profiles() -> None:
 
     for name in profile_names():
         console.print(name)
+
+
+_PRED_ARG = typer.Argument(..., help="Prediction JSON files, one per drawing.")
+_GT_OPT = typer.Option(
+    ..., "--gt", "-g", help="Ground-truth directory, searched recursively by drawing id."
+)
+_REPORT_OUT_OPT = typer.Option(
+    Path("results/latest"), "--out", "-o", help="Where the report is written."
+)
+_RUN_NAME_OPT = typer.Option("run", "--name", help="Run name, recorded in the report.")
+_NO_BBOX_OPT = typer.Option(
+    False, "--no-bbox", help="Match on semantic content alone; a different, easier task."
+)
+_MAX_COST_OPT = typer.Option(
+    None, "--max-cost", help="Reject matches above this cost. Must lie in (0, 1)."
+)
+
+
+@app.command("evaluate")
+def evaluate_predictions(
+    predictions: list[Path] = _PRED_ARG,
+    gt: Path = _GT_OPT,
+    out: Path = _REPORT_OUT_OPT,
+    name: str = _RUN_NAME_OPT,
+    no_bbox: bool = _NO_BBOX_OPT,
+    max_cost: float | None = _MAX_COST_OPT,
+) -> None:
+    """Score predictions against ground truth and write a report.
+
+    Each prediction is paired with the ground truth whose ``drawing_id`` it names, so the
+    two sets need not be in the same order or even the same shape -- a run that covers half
+    the benchmark scores on that half and says so.
+
+    ``--no-bbox`` is reported as a separate run, never merged with a localised one: without
+    coordinates the task is materially easier, and averaging the two would quietly overstate
+    what a model can do.
+    """
+    from balloonbench.evalkit.matching import MatchConfig, no_bbox_config
+    from balloonbench.evalkit.metrics import aggregate, evaluate_drawing
+    from balloonbench.evalkit.prediction import load_prediction
+    from balloonbench.evalkit.report import markdown_table, write_report
+
+    config = no_bbox_config() if no_bbox else MatchConfig()
+    if max_cost is not None:
+        config = replace(config, max_cost=max_cost)
+
+    truth = {}
+    for path in sorted(Path(gt).rglob("*.json")):
+        try:
+            drawing = Drawing.from_json(path)
+        except Exception:  # noqa: BLE001 - not every JSON under the tree is a drawing
+            continue
+        truth[drawing.drawing_id] = drawing
+    if not truth:
+        console.print(f"[red]no ground-truth drawings found under {gt}")
+        raise typer.Exit(code=1)
+
+    scores = []
+    missing = 0
+    for path in predictions:
+        prediction = load_prediction(path)
+        drawing = truth.get(prediction.drawing_id)
+        if drawing is None:
+            missing += 1
+            console.print(
+                f"[yellow]skip[/yellow] {path}: no ground truth for "
+                f"{prediction.drawing_id!r}"
+            )
+            continue
+        scores.append(evaluate_drawing(drawing, prediction, config))
+
+    if not scores:
+        console.print("[red]nothing to score")
+        raise typer.Exit(code=1)
+
+    written = write_report(scores, out, run_name=name, meta={"no_bbox": no_bbox})
+    console.print(markdown_table(aggregate(scores), title=name))
+    console.print(f"\n{len(scores)} drawings scored ({missing} skipped) -> {written['json']}")
 
 
 def _ground_truth_for(image: Path) -> Path | None:

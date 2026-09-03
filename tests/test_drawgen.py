@@ -368,3 +368,28 @@ def test_milestone_2_gate(tmp_path):
                 path.unlink(missing_ok=True)
             checked += 1
     assert checked == per_family * len(FAMILIES)
+
+
+@pytest.mark.parametrize("family", FAMILIES)
+def test_some_characteristics_are_tagged_critical(family, tmp_path):
+    """SPEC.md section 6 asks for roughly 15% of callouts flagged is_critical. The tag is
+    what makes evalkit's tier-4 CTQ recall and cost weighting measurable at all, so a
+    drawing that tags nothing would leave that tier reporting nothing over nothing."""
+    bundle = generate_drawing(family, 41, tmp_path, dpi=TEST_DPI, write_artifacts=False)
+    flagged = [c for c in bundle.drawing.characteristics if c.is_critical]
+    assert flagged, "no characteristic was tagged critical"
+    assert len(flagged) < len(bundle.drawing.characteristics)
+    for c in flagged:
+        assert c.kind in ("dimension", "geometric_tolerance")
+
+
+def test_criticality_is_weighted_toward_what_a_quality_engineer_would_ring():
+    """Not a uniform sample: a positional tolerance outranks an untoleranced dimension."""
+    from balloonbench.drawgen.schemes import _criticality_score
+
+    position = {"kind": "geometric_tolerance", "gtol_symbol": "position", "gtol_value": 0.05}
+    flatness = {"kind": "geometric_tolerance", "gtol_symbol": "flatness", "gtol_value": 0.05}
+    fitted = {"kind": "dimension", "fit_class": "H7", "nominal": 44.0}
+    loose = {"kind": "dimension", "nominal": 120.0, "upper_tol": None, "lower_tol": None}
+    assert _criticality_score(position) > _criticality_score(flatness)
+    assert _criticality_score(fitted) > _criticality_score(loose)

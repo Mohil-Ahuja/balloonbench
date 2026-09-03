@@ -66,6 +66,11 @@ balloonbench = "balloonbench.cli:app"
 [tool.setuptools.packages.find]
 include = ["balloonbench*"]
 
+# The tier-4 cost weights are data the harness reads at runtime, not a developer-only file,
+# so they must travel with an installed wheel.
+[tool.setuptools.package-data]
+balloonbench = ["evalkit/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q --doctest-modules -m 'not slow'"
