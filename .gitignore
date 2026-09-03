@@ -1,4 +1,8 @@
-data/
+# Generated drawings and parts, at the repo root only. Anchored with a leading slash:
+# a bare "data/" also matches tests/data/, which silently kept the 323-string callout
+# corpus -- the whole M6 acceptance gate -- out of the repository. It passed locally,
+# where the file exists untracked, and failed collection on every clean checkout.
+/data/
 __pycache__/
 *.pyc
 .pytest_cache/

@@ -1,0 +1,324 @@
+{"_comment": "Callout strings and what they mean. One JSON object per line; keys other than text/kind/error are asserted against the parsed fields. SPEC.md section 11 asks for a corpus of about 300 handwritten examples, and handwritten is the point: a corpus generated from our own renderer would test the parser in a circle and pass on a sheet nobody else drew. These are drawn from the conventions the renderer uses plus the ones it does not -- AutoCAD's %%c, shop abbreviations, comma decimals, inch fractions, and the several ways people write a material condition modifier."}
+{"text": "12", "kind": "dimension", "dim_type": "linear", "nominal": 12.0}
+{"text": "12.5", "kind": "dimension", "dim_type": "linear", "nominal": 12.5}
+{"text": "120", "kind": "dimension", "dim_type": "linear", "nominal": 120.0}
+{"text": "0.5", "kind": "dimension", "dim_type": "linear", "nominal": 0.5}
+{"text": ".5", "kind": "dimension", "dim_type": "linear", "nominal": 0.5}
+{"text": "1000", "kind": "dimension", "dim_type": "linear", "nominal": 1000.0}
+{"text": "45.00", "kind": "dimension", "dim_type": "linear", "nominal": 45.0}
+{"text": "8", "kind": "dimension", "dim_type": "linear", "nominal": 8.0}
+{"text": "6.35", "kind": "dimension", "dim_type": "linear", "nominal": 6.35}
+{"text": "250.75", "kind": "dimension", "dim_type": "linear", "nominal": 250.75}
+{"text": "12,5", "kind": "dimension", "dim_type": "linear", "nominal": 12.5}
+{"text": "0,25", "kind": "dimension", "dim_type": "linear", "nominal": 0.25}
+{"text": "1/4", "kind": "dimension", "dim_type": "linear", "nominal": 0.25}
+{"text": "3/8", "kind": "dimension", "dim_type": "linear", "nominal": 0.375}
+{"text": "1-1/2", "kind": "dimension", "dim_type": "linear", "nominal": 1.5}
+{"text": "2-3/4", "kind": "dimension", "dim_type": "linear", "nominal": 2.75}
+{"text": "  44  ", "kind": "dimension", "dim_type": "linear", "nominal": 44.0}
+{"text": "44\n", "kind": "dimension", "dim_type": "linear", "nominal": 44.0}
+{"text": "⌀44", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0}
+{"text": "Ø44", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0}
+{"text": "ø44", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0}
+{"text": "%%c44", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0}
+{"text": "%%C44", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0}
+{"text": "DIA 44", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0}
+{"text": "⌀ 44", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0}
+{"text": "⌀12.5", "kind": "dimension", "dim_type": "diameter", "nominal": 12.5}
+{"text": "⌀0.5", "kind": "dimension", "dim_type": "diameter", "nominal": 0.5}
+{"text": "⌀315", "kind": "dimension", "dim_type": "diameter", "nominal": 315.0}
+{"text": "⌀44.45", "kind": "dimension", "dim_type": "diameter", "nominal": 44.45}
+{"text": "S⌀20", "kind": "dimension", "dim_type": "diameter", "nominal": 20.0}
+{"text": "SØ20", "kind": "dimension", "dim_type": "diameter", "nominal": 20.0}
+{"text": "R5", "kind": "dimension", "dim_type": "radius", "nominal": 5.0}
+{"text": "R12.5", "kind": "dimension", "dim_type": "radius", "nominal": 12.5}
+{"text": "R0.5", "kind": "dimension", "dim_type": "radius", "nominal": 0.5}
+{"text": "R 8", "kind": "dimension", "dim_type": "radius", "nominal": 8.0}
+{"text": "R250", "kind": "dimension", "dim_type": "radius", "nominal": 250.0}
+{"text": "SR20", "kind": "dimension", "dim_type": "radius", "nominal": 20.0}
+{"text": "SR 6.5", "kind": "dimension", "dim_type": "radius", "nominal": 6.5}
+{"text": "□25", "kind": "dimension", "dim_type": "linear", "nominal": 25.0}
+{"text": "□ 12.7", "kind": "dimension", "dim_type": "linear", "nominal": 12.7}
+{"text": "30°", "kind": "dimension", "dim_type": "angular", "nominal": 30.0}
+{"text": "45°", "kind": "dimension", "dim_type": "angular", "nominal": 45.0}
+{"text": "30.5°", "kind": "dimension", "dim_type": "angular", "nominal": 30.5}
+{"text": "90°", "kind": "dimension", "dim_type": "angular", "nominal": 90.0}
+{"text": "120°", "kind": "dimension", "dim_type": "angular", "nominal": 120.0}
+{"text": "15%%d", "kind": "dimension", "dim_type": "angular", "nominal": 15.0}
+{"text": "60 DEG", "kind": "dimension", "dim_type": "angular", "nominal": 60.0}
+{"text": "0.5°", "kind": "dimension", "dim_type": "angular", "nominal": 0.5}
+{"text": "44 ±0.05", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": -0.05, "tol_style": "bilateral"}
+{"text": "44±0.05", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": -0.05}
+{"text": "44 +/-0.05", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": -0.05}
+{"text": "44 %%p0.05", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": -0.05}
+{"text": "⌀44 ±0.02", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0, "upper_tol": 0.02}
+{"text": "120 ±0.1", "kind": "dimension", "nominal": 120.0, "upper_tol": 0.1, "lower_tol": -0.1}
+{"text": "12 ±0.2", "kind": "dimension", "nominal": 12.0, "upper_tol": 0.2}
+{"text": "6.5 ±0.05", "kind": "dimension", "nominal": 6.5, "upper_tol": 0.05}
+{"text": "100 ± 0.15", "kind": "dimension", "nominal": 100.0, "upper_tol": 0.15}
+{"text": "R10 ±0.1", "kind": "dimension", "dim_type": "radius", "nominal": 10.0, "upper_tol": 0.1}
+{"text": "30° ±0.5", "kind": "dimension", "dim_type": "angular", "nominal": 30.0, "upper_tol": 0.5}
+{"text": "45 ±1°", "kind": "dimension", "dim_type": "angular", "nominal": 45.0, "upper_tol": 1.0}
+{"text": "44 +0.05/-0.00", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": 0.0, "tol_style": "unilateral"}
+{"text": "44 +0.05/-0", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": 0.0}
+{"text": "44 +0/-0.05", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.0, "lower_tol": -0.05}
+{"text": "⌀44 +0.025/-0.000", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0, "upper_tol": 0.025, "lower_tol": 0.0}
+{"text": "⌀12 +0.018/-0.000", "kind": "dimension", "nominal": 12.0, "upper_tol": 0.018}
+{"text": "80 +0.3/-0.1", "kind": "dimension", "nominal": 80.0, "upper_tol": 0.3, "lower_tol": -0.1}
+{"text": "80 +0.1/-0.3", "kind": "dimension", "nominal": 80.0, "upper_tol": 0.1, "lower_tol": -0.3}
+{"text": "25 +0.10/-0.10", "kind": "dimension", "nominal": 25.0, "upper_tol": 0.1, "lower_tol": -0.1, "tol_style": "bilateral"}
+{"text": "44 +0.05 -0.00", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": 0.0}
+{"text": "44 +0.05\n-0.00", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": 0.0}
+{"text": "44.05/43.95", "kind": "dimension", "nominal": 44.0, "upper_tol": 0.05, "lower_tol": -0.05, "tol_style": "limit"}
+{"text": "⌀44.05/43.95", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0, "tol_style": "limit"}
+{"text": "12.10/12.00", "kind": "dimension", "nominal": 12.05, "tol_style": "limit"}
+{"text": "20.021/20.000", "kind": "dimension", "tol_style": "limit"}
+{"text": "6.02/5.98", "kind": "dimension", "nominal": 6.0, "tol_style": "limit"}
+{"text": "⌀44 H7", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0, "fit_class": "H7", "tol_style": "fit"}
+{"text": "⌀44 h6", "kind": "dimension", "fit_class": "h6", "tol_style": "fit"}
+{"text": "⌀44H7", "kind": "dimension", "fit_class": "H7"}
+{"text": "⌀20 K6", "kind": "dimension", "fit_class": "K6"}
+{"text": "44 js9", "kind": "dimension", "fit_class": "js9"}
+{"text": "⌀12 g6", "kind": "dimension", "fit_class": "g6"}
+{"text": "⌀44 H7/g6", "kind": "dimension", "fit_class": "H7"}
+{"text": "⌀30 P7", "kind": "dimension", "fit_class": "P7"}
+{"text": "⌀8 f7", "kind": "dimension", "fit_class": "f7"}
+{"text": "⌀100 H11", "kind": "dimension", "fit_class": "H11"}
+{"text": "(44)", "kind": "dimension", "nominal": 44.0, "is_reference": true}
+{"text": "(⌀44)", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0, "is_reference": true}
+{"text": "(120.5)", "kind": "dimension", "nominal": 120.5, "is_reference": true}
+{"text": "44 REF", "kind": "dimension", "nominal": 44.0, "is_reference": true}
+{"text": "⌀44 REF", "kind": "dimension", "dim_type": "diameter", "is_reference": true}
+{"text": "4X ⌀12", "kind": "dimension", "dim_type": "diameter", "nominal": 12.0, "count": 4}
+{"text": "4x ⌀12", "kind": "dimension", "count": 4}
+{"text": "4× ⌀12", "kind": "dimension", "count": 4}
+{"text": "2X R3", "kind": "dimension", "dim_type": "radius", "nominal": 3.0, "count": 2}
+{"text": "8X ⌀6.5", "kind": "dimension", "nominal": 6.5, "count": 8}
+{"text": "16X ⌀14 THRU", "kind": "dimension", "nominal": 14.0, "count": 16}
+{"text": "12X ⌀10.5 THRU", "kind": "dimension", "count": 12}
+{"text": "6X 45°", "kind": "dimension", "dim_type": "angular", "count": 6}
+{"text": "⌀44 THRU", "kind": "dimension", "dim_type": "diameter", "nominal": 44.0}
+{"text": "⌀12 THROUGH", "kind": "dimension", "nominal": 12.0}
+{"text": "⌀12 THRU ALL", "kind": "dimension", "nominal": 12.0}
+{"text": "⌀12↧20", "kind": "dimension", "nominal": 12.0}
+{"text": "⌀12 ↧ 20", "kind": "dimension", "nominal": 12.0}
+{"text": "⌀6.5 DEEP 12", "kind": "dimension", "nominal": 6.5}
+{"text": "⌀6.5 DP 12", "kind": "dimension", "nominal": 6.5}
+{"text": "2X ⌀6.5↧12", "kind": "dimension", "nominal": 6.5, "count": 2}
+{"text": "⌀20 ⌴", "kind": "dimension", "nominal": 20.0}
+{"text": "⌀20 CBORE", "kind": "dimension", "nominal": 20.0}
+{"text": "⌀20 C'BORE", "kind": "dimension", "nominal": 20.0}
+{"text": "⌀20 SPOTFACE", "kind": "dimension", "nominal": 20.0}
+{"text": "⌀20 CSK", "kind": "dimension", "nominal": 20.0}
+{"text": "⌀20 C'SINK", "kind": "dimension", "nominal": 20.0}
+{"text": "R5 TYP", "kind": "dimension", "dim_type": "radius", "nominal": 5.0}
+{"text": "⌀12 TYP", "kind": "dimension", "nominal": 12.0}
+{"text": "45 MAX", "kind": "dimension", "nominal": 45.0}
+{"text": "0.2 MIN", "kind": "dimension", "nominal": 0.2}
+{"text": "M12", "kind": "thread", "nominal": 12.0}
+{"text": "M3", "kind": "thread", "nominal": 3.0}
+{"text": "M6", "kind": "thread", "nominal": 6.0}
+{"text": "M8", "kind": "thread", "nominal": 8.0}
+{"text": "M10", "kind": "thread", "nominal": 10.0}
+{"text": "M20", "kind": "thread", "nominal": 20.0}
+{"text": "M2.5", "kind": "thread", "nominal": 2.5}
+{"text": "M12X1.75", "kind": "thread", "nominal": 12.0}
+{"text": "M12x1.75", "kind": "thread", "nominal": 12.0}
+{"text": "M12 X 1.75", "kind": "thread", "nominal": 12.0}
+{"text": "M12X1.75-6H", "kind": "thread", "nominal": 12.0}
+{"text": "M6-6g", "kind": "thread", "nominal": 6.0}
+{"text": "M20X2.5-6H", "kind": "thread", "nominal": 20.0}
+{"text": "M16X2-6H-LH", "kind": "thread", "nominal": 16.0}
+{"text": "M4X0.7", "kind": "thread", "nominal": 4.0}
+{"text": "M30X3.5-6g", "kind": "thread", "nominal": 30.0}
+{"text": "1/4-20 UNC-2B", "kind": "thread", "nominal": 0.25}
+{"text": "3/8-16 UNC", "kind": "thread", "nominal": 0.375}
+{"text": "1/2-13 UNC-2A", "kind": "thread", "nominal": 0.5}
+{"text": "5/16-18 UNC-2B", "kind": "thread", "nominal": 0.3125}
+{"text": "1/4-28 UNF-2B", "kind": "thread", "nominal": 0.25}
+{"text": "1-1/2-6 UN", "kind": "thread", "nominal": 1.5}
+{"text": "0.25-20 UNC-2A", "kind": "thread", "nominal": 0.25}
+{"text": "1/2-14 NPT", "kind": "thread", "nominal": 0.5}
+{"text": "3/4-14 NPTF", "kind": "thread", "nominal": 0.75}
+{"text": "10-32 UNF-2B", "kind": "thread", "nominal": 10.0}
+{"text": "Ra 3.2", "kind": "surface_finish"}
+{"text": "Ra3.2", "kind": "surface_finish"}
+{"text": "RA 1.6", "kind": "surface_finish"}
+{"text": "ra 0.8", "kind": "surface_finish"}
+{"text": "Ra 0.4", "kind": "surface_finish"}
+{"text": "Ra 6.3", "kind": "surface_finish"}
+{"text": "Ra 12.5", "kind": "surface_finish"}
+{"text": "Ra 0,8", "kind": "surface_finish"}
+{"text": "Rz 12.5", "kind": "surface_finish"}
+{"text": "RZ 25", "kind": "surface_finish"}
+{"text": "Ra 0.8 µm", "kind": "surface_finish"}
+{"text": "Ra 1.6 um", "kind": "surface_finish"}
+{"text": "63 µin", "kind": "surface_finish"}
+{"text": "125 uin", "kind": "surface_finish"}
+{"text": "32 microinch", "kind": "surface_finish"}
+{"text": "⏥ 0.05", "kind": "geometric_tolerance", "gtol_symbol": "flatness", "gtol_value": 0.05, "gtol_zone": "linear", "n_refs": 0}
+{"text": "⏥0.05", "kind": "geometric_tolerance", "gtol_symbol": "flatness", "gtol_value": 0.05}
+{"text": "⏥ 0.02", "kind": "geometric_tolerance", "gtol_symbol": "flatness", "gtol_value": 0.02}
+{"text": "FLAT 0.05", "kind": "geometric_tolerance", "gtol_symbol": "flatness", "gtol_value": 0.05}
+{"text": "FLATNESS 0.1", "kind": "geometric_tolerance", "gtol_symbol": "flatness", "gtol_value": 0.1}
+{"text": "⏤ 0.03", "kind": "geometric_tolerance", "gtol_symbol": "straightness", "gtol_value": 0.03}
+{"text": "STR 0.02", "kind": "geometric_tolerance", "gtol_symbol": "straightness", "gtol_value": 0.02}
+{"text": "○ 0.01", "kind": "geometric_tolerance", "gtol_symbol": "circularity", "gtol_value": 0.01}
+{"text": "CIRC 0.015", "kind": "geometric_tolerance", "gtol_symbol": "circularity", "gtol_value": 0.015}
+{"text": "ROUNDNESS 0.02", "kind": "geometric_tolerance", "gtol_symbol": "circularity", "gtol_value": 0.02}
+{"text": "⌭ 0.05", "kind": "geometric_tolerance", "gtol_symbol": "cylindricity", "gtol_value": 0.05}
+{"text": "CYL 0.03", "kind": "geometric_tolerance", "gtol_symbol": "cylindricity", "gtol_value": 0.03}
+{"text": "⌓ 0.2 A", "kind": "geometric_tolerance", "gtol_symbol": "profile_surface", "gtol_value": 0.2, "n_refs": 1}
+{"text": "PROF 0.5 A B", "kind": "geometric_tolerance", "gtol_symbol": "profile_surface", "n_refs": 2}
+{"text": "⊥ 0.02 A", "kind": "geometric_tolerance", "gtol_symbol": "perpendicularity", "gtol_value": 0.02, "n_refs": 1}
+{"text": "⊥0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "perpendicularity", "gtol_value": 0.05}
+{"text": "PERP 0.02 A", "kind": "geometric_tolerance", "gtol_symbol": "perpendicularity", "n_refs": 1}
+{"text": "PERP ⌀0.1 A", "kind": "geometric_tolerance", "gtol_symbol": "perpendicularity", "gtol_zone": "diametral"}
+{"text": "SQUARENESS 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "perpendicularity"}
+{"text": "∥ 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "parallelism", "gtol_value": 0.05, "n_refs": 1}
+{"text": "// 0.1 B", "kind": "geometric_tolerance", "gtol_symbol": "parallelism", "n_refs": 1}
+{"text": "PARA 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "parallelism"}
+{"text": "∠ 0.1 A B", "kind": "geometric_tolerance", "gtol_symbol": "angularity", "n_refs": 2}
+{"text": "ANG 0.2 A", "kind": "geometric_tolerance", "gtol_symbol": "angularity"}
+{"text": "⌖ ⌀0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "position", "gtol_value": 0.05, "gtol_zone": "diametral", "n_refs": 1}
+{"text": "⌖ ⌀0.05 Ⓜ A B Ⓜ", "kind": "geometric_tolerance", "gtol_symbol": "position", "material_modifier": "MMC", "n_refs": 2}
+{"text": "⌖ ⌀0.05 (M) A B (M)", "kind": "geometric_tolerance", "gtol_symbol": "position", "material_modifier": "MMC", "n_refs": 2}
+{"text": "⌖ ⌀0.05 (MMC) A", "kind": "geometric_tolerance", "material_modifier": "MMC"}
+{"text": "⌖ ⌀0.6 Ⓜ A B", "kind": "geometric_tolerance", "gtol_value": 0.6, "material_modifier": "MMC", "n_refs": 2}
+{"text": "⌖⌀0.1 A", "kind": "geometric_tolerance", "gtol_symbol": "position", "gtol_value": 0.1}
+{"text": "⌖ 0.25 A B C", "kind": "geometric_tolerance", "gtol_symbol": "position", "gtol_zone": "linear", "n_refs": 3}
+{"text": "POS ⌀0.5 A B C", "kind": "geometric_tolerance", "gtol_symbol": "position", "n_refs": 3}
+{"text": "TP ⌀0.25 Ⓜ A", "kind": "geometric_tolerance", "gtol_symbol": "position", "material_modifier": "MMC"}
+{"text": "TRUE POSITION 0.2 A", "kind": "geometric_tolerance", "gtol_symbol": "position"}
+{"text": "⌖ ⌀0.05 Ⓛ A", "kind": "geometric_tolerance", "material_modifier": "LMC"}
+{"text": "⌖ ⌀0.05 (L) A", "kind": "geometric_tolerance", "material_modifier": "LMC"}
+{"text": "⌖ ⌀0.05 (S) A", "kind": "geometric_tolerance", "material_modifier": null}
+{"text": "⌖ ⌀0.05 (RFS) A", "kind": "geometric_tolerance", "material_modifier": null}
+{"text": "◎ 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "concentricity", "n_refs": 1}
+{"text": "CONC 0.02 A", "kind": "geometric_tolerance", "gtol_symbol": "concentricity"}
+{"text": "⌯ 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "symmetry", "n_refs": 1}
+{"text": "SYM 0.1 A B", "kind": "geometric_tolerance", "gtol_symbol": "symmetry", "n_refs": 2}
+{"text": "↗ 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "circular_runout", "n_refs": 1}
+{"text": "RUNOUT 0.02 A", "kind": "geometric_tolerance", "gtol_symbol": "circular_runout"}
+{"text": "CIRCULAR RUNOUT 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "circular_runout"}
+{"text": "⌰ 0.1 A", "kind": "geometric_tolerance", "gtol_symbol": "total_runout", "n_refs": 1}
+{"text": "TOTAL RUNOUT 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "total_runout"}
+{"text": "TIR 0.03 A", "kind": "geometric_tolerance", "gtol_symbol": "total_runout"}
+{"text": "| ⌖ | ⌀0.05 Ⓜ | A | B |", "kind": "geometric_tolerance", "gtol_symbol": "position", "n_refs": 2}
+{"text": "|⏥|0.05|", "kind": "geometric_tolerance", "gtol_symbol": "flatness", "gtol_value": 0.05, "n_refs": 0}
+{"text": "⊥ 0.02 AB", "kind": "geometric_tolerance", "gtol_symbol": "perpendicularity", "n_refs": 1}
+{"text": "⌖ ⌀0.05 A B C", "kind": "geometric_tolerance", "n_refs": 3}
+{"text": "⌖ 0.5", "kind": "geometric_tolerance", "gtol_symbol": "position", "n_refs": 0}
+{"text": "⏥ 0.05 A", "kind": "geometric_tolerance", "gtol_symbol": "flatness", "n_refs": 1, "_note": "the grammar reads it; the schema rejects it as R2. Kept so the corpus records which layer catches what."}
+{"text": "⌀44 h6 THRU", "kind": "dimension", "fit_class": "h6"}
+{"text": "4X ⌀12 ±0.1", "kind": "dimension", "count": 4, "upper_tol": 0.1}
+{"text": "2X 45°", "kind": "dimension", "dim_type": "angular", "count": 2, "nominal": 45.0}
+{"text": "⌀6 THRU 4X", "kind": "dimension", "nominal": 6.0}
+{"text": "R2.5", "kind": "dimension", "dim_type": "radius", "nominal": 2.5}
+{"text": "R1", "kind": "dimension", "dim_type": "radius", "nominal": 1.0}
+{"text": "⌀2", "kind": "dimension", "nominal": 2.0}
+{"text": "⌀1.5", "kind": "dimension", "nominal": 1.5}
+{"text": "3.175", "kind": "dimension", "nominal": 3.175}
+{"text": "0.125", "kind": "dimension", "nominal": 0.125}
+{"text": "0.0625", "kind": "dimension", "nominal": 0.0625}
+{"text": "2.0000", "kind": "dimension", "nominal": 2.0}
+{"text": "1.750 ±.005", "kind": "dimension", "nominal": 1.75, "upper_tol": 0.005}
+{"text": "0.500 +.002/-.000", "kind": "dimension", "nominal": 0.5, "upper_tol": 0.002, "lower_tol": 0.0}
+{"text": "2.505/2.495", "kind": "dimension", "nominal": 2.5, "tol_style": "limit"}
+{"text": "⌀.250", "kind": "dimension", "nominal": 0.25}
+{"text": "⌀1.0625", "kind": "dimension", "nominal": 1.0625}
+{"text": "60", "kind": "dimension", "nominal": 60.0}
+{"text": "72.5", "kind": "dimension", "nominal": 72.5}
+{"text": "160", "kind": "dimension", "nominal": 160.0}
+{"text": "200", "kind": "dimension", "nominal": 200.0}
+{"text": "355", "kind": "dimension", "nominal": 355.0}
+{"text": "18", "kind": "dimension", "nominal": 18.0}
+{"text": "22.5", "kind": "dimension", "nominal": 22.5}
+{"text": "36", "kind": "dimension", "nominal": 36.0}
+{"text": "5", "kind": "dimension", "nominal": 5.0}
+{"text": "3", "kind": "dimension", "nominal": 3.0}
+{"text": "⌀25 ±0.05", "kind": "dimension", "nominal": 25.0, "upper_tol": 0.05}
+{"text": "⌀30 ±0.02", "kind": "dimension", "nominal": 30.0, "upper_tol": 0.02}
+{"text": "⌀35 H8", "kind": "dimension", "fit_class": "H8"}
+{"text": "⌀40 js6", "kind": "dimension", "fit_class": "js6"}
+{"text": "⌀50 M7", "kind": "dimension", "fit_class": "M7"}
+{"text": "⌀60 N7", "kind": "dimension", "fit_class": "N7"}
+{"text": "⌀70 e8", "kind": "dimension", "fit_class": "e8"}
+{"text": "⌀80 d9", "kind": "dimension", "fit_class": "d9"}
+{"text": "⌀90 H9", "kind": "dimension", "fit_class": "H9"}
+{"text": "⌀110 k6", "kind": "dimension", "fit_class": "k6"}
+{"text": "⌀5.5 THRU", "kind": "dimension", "nominal": 5.5}
+{"text": "⌀9 ⌴ ⌀15↧8", "kind": "dimension", "nominal": 9.0}
+{"text": "⌀11 THRU ⌀18 ⌴ ↧ 10", "kind": "dimension", "nominal": 11.0}
+{"text": "4X M6", "kind": "thread", "nominal": 6.0, "count": 4, "_note": "a leading count belongs to whatever follows it, thread or dimension alike"}
+{"text": "⏥ 0.1", "kind": "geometric_tolerance", "gtol_value": 0.1}
+{"text": "⊥ 0.1 A", "kind": "geometric_tolerance", "gtol_value": 0.1}
+{"text": "∥ 0.02 A", "kind": "geometric_tolerance", "gtol_value": 0.02}
+{"text": "⌖ ⌀0.2 A B", "kind": "geometric_tolerance", "gtol_value": 0.2, "n_refs": 2}
+{"text": "⌖ ⌀0.3 Ⓜ A", "kind": "geometric_tolerance", "gtol_value": 0.3}
+{"text": "⌖ ⌀0.8 Ⓜ A B Ⓜ C", "kind": "geometric_tolerance", "n_refs": 3}
+{"text": "↗ 0.1 A B", "kind": "geometric_tolerance", "n_refs": 2}
+{"text": "⌰ 0.05 A B", "kind": "geometric_tolerance", "n_refs": 2}
+{"text": "⌓ 0.1 A B C", "kind": "geometric_tolerance", "n_refs": 3}
+{"text": "◎ 0.1 A", "kind": "geometric_tolerance", "gtol_value": 0.1}
+{"text": "⌯ 0.2 B", "kind": "geometric_tolerance", "gtol_value": 0.2}
+{"text": "∠ 0.05 A", "kind": "geometric_tolerance", "gtol_value": 0.05}
+{"text": "⌭ 0.01", "kind": "geometric_tolerance", "gtol_value": 0.01, "n_refs": 0}
+{"text": "○ 0.005", "kind": "geometric_tolerance", "gtol_value": 0.005}
+{"text": "⏤ 0.1", "kind": "geometric_tolerance", "gtol_value": 0.1}
+{"text": "M5X0.8", "kind": "thread", "nominal": 5.0}
+{"text": "M14X1.5", "kind": "thread", "nominal": 14.0}
+{"text": "M18X1.5-6H", "kind": "thread", "nominal": 18.0}
+{"text": "M24X3", "kind": "thread", "nominal": 24.0}
+{"text": "M27X2", "kind": "thread", "nominal": 27.0}
+{"text": "M33X2", "kind": "thread", "nominal": 33.0}
+{"text": "M42X4.5", "kind": "thread", "nominal": 42.0}
+{"text": "M1.6", "kind": "thread", "nominal": 1.6}
+{"text": "M2", "kind": "thread", "nominal": 2.0}
+{"text": "M2.5X0.45", "kind": "thread", "nominal": 2.5}
+{"text": "5/8-11 UNC-2B", "kind": "thread", "nominal": 0.625}
+{"text": "3/4-10 UNC", "kind": "thread", "nominal": 0.75}
+{"text": "7/8-9 UNC-2A", "kind": "thread", "nominal": 0.875}
+{"text": "1-8 UNC-2B", "kind": "thread", "nominal": 1.0}
+{"text": "1-1/4-7 UNC", "kind": "thread", "nominal": 1.25}
+{"text": "1/8-27 NPT", "kind": "thread", "nominal": 0.125}
+{"text": "3/8-18 NPT", "kind": "thread", "nominal": 0.375}
+{"text": "1/4-18 NPTF", "kind": "thread", "nominal": 0.25}
+{"text": "1/16-27 NPT", "kind": "thread", "nominal": 0.0625}
+{"text": "2-11-1/2 NPT", "kind": "thread", "error": true, "_note": "a real but fractional thread pitch this grammar does not model; refusing is better than a wrong number"}
+{"text": "", "error": true}
+{"text": "   ", "error": true}
+{"text": "⌀", "error": true}
+{"text": "R", "error": true}
+{"text": "±0.05", "error": true}
+{"text": "⌖", "error": true}
+{"text": "⌖ A", "error": true}
+{"text": "⏥", "error": true}
+{"text": "⊥ A", "error": true}
+{"text": "⌖ ⌀0 A", "error": true, "_note": "a zero tolerance zone is not a zone"}
+{"text": "⌖ ⌀-0.5 A", "error": true}
+{"text": "44 ±", "error": true}
+{"text": "44 +0.05/", "error": true}
+{"text": "⌀44 ⌀44", "error": true}
+{"text": "NOTES:", "error": true}
+{"text": "SEE DETAIL A", "error": true}
+{"text": "UNLESS OTHERWISE SPECIFIED", "error": true}
+{"text": "BREAK ALL SHARP EDGES", "error": true}
+{"text": "MATERIAL: EN-GJS-400-15", "error": true}
+{"text": "SCALE 1:2", "error": true}
+{"text": "REV C", "error": true}
+{"text": "FLG-4417-A", "error": true}
+{"text": "ISO 2768-mK", "error": true}
+{"text": "SECTION A-A", "error": true}
+{"text": "DETAIL B SCALE 4:1", "error": true}
+{"text": "THIRD ANGLE PROJECTION", "error": true}
+{"text": "⌖ ⌀0.05 A B C D", "error": true, "_note": "four datum references; a frame has at most three"}
+{"text": "M12X", "error": true}
+{"text": "POSITIONAL ACCURACY", "error": true}
+{"text": "FLATTEN", "error": true}
+{"text": "PARALLEL TO SURFACE", "error": true}
+{"text": "-", "error": true}
+{"text": "/", "error": true}
+{"text": "A", "error": true}
+{"text": "TYP", "error": true}
+{"text": "THRU", "error": true}

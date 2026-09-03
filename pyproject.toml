@@ -26,11 +26,14 @@ classifiers = [
 dependencies = [
   "cadquery>=2.5",
   # nlopt and casadi are both cadquery dependencies (its constraint solver). Loading
-  # nlopt 2.11.0 and casadi 3.8.0 into the same interpreter segfaults on shutdown: the
-  # import succeeds and results are correct, but the process exits 139, which breaks CI
-  # and any shell chaining. nlopt 2.9.1 does not. Do not relax this ceiling without
-  # re-running scripts/check_env.py, which asserts a clean child-process exit.
-  "nlopt>=2.9,<2.11",
+  # nlopt 2.10 or newer alongside casadi 3.8.0 into the same interpreter crashes on
+  # shutdown: the import succeeds and results are correct, but the process dies -- exit
+  # 139 on Linux, 0xC0000005 on Windows -- which breaks CI and any shell chaining.
+  # nlopt 2.9.1 does not. The ceiling was <2.11 and was one version too loose: CI
+  # resolved 2.10.0 and every Windows job failed the environment gate while a local
+  # machine holding 2.9.1 passed. Do not relax it without re-running
+  # scripts/check_env.py, whose "clean interpreter shutdown" check exists for this.
+  "nlopt>=2.9,<2.10",
   "ezdxf>=1.3",
   "numpy>=1.26",
   "scipy>=1.11",
