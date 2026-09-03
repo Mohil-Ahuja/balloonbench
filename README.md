@@ -38,8 +38,8 @@ Under construction, milestone by milestone.
 | M3 — `degrade` (6 realism profiles) | **done** |
 | M4 — `evalkit` (matching + 4 metric tiers) | **done** |
 | M5 — VLM baselines (zero-shot + structured) | **done** (harness; the paid run is yours to launch) |
-| M6 — callout grammar + vector-hybrid baseline | next |
-| M7 — `verifier` | not started |
+| M6 — callout grammar + vector-hybrid baseline | **done** |
+| M7 — `verifier` | next |
 | M8 — 50 hand-labelled real drawings | not started |
 | M9–M11 — detector baseline, demo, write-up | not started |
 
@@ -166,6 +166,45 @@ would make two runs of the same command incomparable while both claimed the same
 API keys are read from the environment (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`,
 `GOOGLE_API_KEY`); the SDKs live behind the optional `baselines` extra and none is imported
 until it is used.
+
+### Reading a native PDF without a model
+
+`vector_hybrid` extracts the PDF's own text with `pdfplumber`, clusters the words into
+callouts geometrically, and parses them with a recursive-descent grammar
+(`baselines/grammar.py`) shared with the detector baseline. Only the strings the grammar
+cannot resolve are cropped and sent to a model.
+
+```bash
+balloonbench predict vector_hybrid --gt data/drawings --model claude-opus-5
+```
+
+On the synthetic set at 150 DPI, with **no model calls at all**, it scores:
+
+| Family | Precision | Recall | F1 |
+|---|---|---|---|
+| flange | 0.97 | 0.78 | 0.87 |
+| housing | 1.00 | 0.69 | 0.82 |
+| plate_bracket | 0.98 | 0.90 | 0.94 |
+| shaft | 1.00 | 0.88 | 0.94 |
+| valve_body | 1.00 | 0.77 | 0.87 |
+| **overall** | **0.99** | **0.82** | **0.90** |
+
+Given a match, it reads the symbol, the material modifier and the datum sequence correctly
+every time, and the nominal 94% of the time. Full-drawing exact match is zero, because it
+has no way to know which view a callout annotates and records `view` as `"unknown"` rather
+than guessing.
+
+On a scan it returns nothing and says so. That zero is the point: SPEC's prediction is that
+routing on input type matters more than model choice, and rerouting a raster sheet through a
+model while still calling the result "vector hybrid" would hide exactly the finding the
+baseline exists to produce.
+
+The grammar accepts what real drawings write, not only what this repository renders —
+AutoCAD's `%%c`, shop abbreviations like `TP` and `TIR`, comma decimals, inch fractions,
+`(M)` alongside `Ⓜ` — and refuses anything ambiguous rather than guessing, because a wrong
+parse enters the results as a confident answer while a refusal can be routed to a model. It
+is gated on a 323-string corpus at `tests/data/callout_corpus.jsonl`, a quarter of which are
+strings that must **not** parse.
 
 ### House styles
 

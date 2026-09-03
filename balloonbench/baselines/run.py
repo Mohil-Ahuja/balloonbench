@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from balloonbench import __version__
-from balloonbench.baselines import vlm_structured, vlm_zeroshot
+from balloonbench.baselines import vector_hybrid, vlm_structured, vlm_zeroshot
 from balloonbench.baselines.base import BaselineResult, PromptConfig
 from balloonbench.baselines.cache import ResponseCache
 from balloonbench.baselines.providers import Provider
@@ -31,11 +31,12 @@ from balloonbench.schema import Drawing
 
 __all__ = ["BASELINES", "RunManifest", "image_for", "run_baseline"]
 
-#: The baselines this milestone provides. ``vector_hybrid`` and ``detr_ocr`` join them at
-#: M6 and M9; the registry is the single place the CLI and the tests look.
+#: The baselines available. ``detr_ocr`` joins them at M9; the registry is the single place
+#: the CLI and the tests look.
 BASELINES: dict[str, Callable[..., BaselineResult]] = {
     vlm_zeroshot.NAME: vlm_zeroshot.predict,
     vlm_structured.NAME: vlm_structured.predict,
+    vector_hybrid.NAME: vector_hybrid.predict,
 }
 
 
@@ -112,7 +113,12 @@ def run_baseline(
 
     if config is None:
         config = _default_config(name)
-    if name == vlm_zeroshot.NAME:
+    if name == vector_hybrid.NAME:
+        # It votes over nothing and tiles nothing: it reads the PDF once.
+        samples = 1
+        kwargs.pop("samples", None)
+        kwargs.pop("tile", None)
+    elif name == vlm_zeroshot.NAME:
         # The control condition is a single answer by construction. Voting is the treatment
         # that distinguishes the structured baseline, so it must not leak into the control.
         samples = 1
